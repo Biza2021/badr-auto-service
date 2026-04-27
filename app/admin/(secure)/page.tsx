@@ -5,12 +5,14 @@ import { AdminPageHeader } from "@/components/admin-page-header";
 import { EmptyState } from "@/components/empty-state";
 import { StatCard } from "@/components/stat-card";
 import { StatusBadge } from "@/components/status-badge";
+import { requireAdmin } from "@/lib/auth";
 import { displayStaffName } from "@/lib/display";
 import { formatDateTime } from "@/lib/format";
 import { prisma } from "@/lib/prisma";
 import { appointmentStatusLabels, repairStatusLabels } from "@/lib/status";
 
 export default async function AdminDashboardPage() {
+  await requireAdmin();
   const now = new Date();
   const startOfToday = new Date(now);
   startOfToday.setHours(0, 0, 0, 0);

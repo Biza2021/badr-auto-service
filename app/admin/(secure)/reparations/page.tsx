@@ -4,6 +4,7 @@ import { Plus, Search } from "lucide-react";
 import { AdminPageHeader } from "@/components/admin-page-header";
 import { EmptyState } from "@/components/empty-state";
 import { StatusBadge } from "@/components/status-badge";
+import { requireAdmin } from "@/lib/auth";
 import { formatDate, formatMoney } from "@/lib/format";
 import { prisma } from "@/lib/prisma";
 import { repairStatusLabels } from "@/lib/status";
@@ -11,6 +12,7 @@ import { repairStatusLabels } from "@/lib/status";
 type SearchParams = Promise<Record<string, string | string[] | undefined>>;
 
 export default async function RepairsPage({ searchParams }: { searchParams: SearchParams }) {
+  await requireAdmin();
   const params = await searchParams;
   const q = typeof params.q === "string" ? params.q.trim() : "";
   const status = typeof params.statut === "string" ? params.statut : "";

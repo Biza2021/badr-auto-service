@@ -4,6 +4,7 @@ import { AdminPageHeader } from "@/components/admin-page-header";
 import { PendingButton } from "@/components/pending-button";
 import { StatusBadge } from "@/components/status-badge";
 import { updatePaymentStatusAction } from "@/app/admin/actions";
+import { requireAdmin } from "@/lib/auth";
 import { formatDate, formatMoney } from "@/lib/format";
 import { prisma } from "@/lib/prisma";
 import { invoiceLineTypeLabels, paymentStatusLabels } from "@/lib/status";
@@ -18,6 +19,7 @@ export default async function InvoiceDetailPage({
   params: Params;
   searchParams: SearchParams;
 }) {
+  await requireAdmin();
   const { id } = await params;
   const query = await searchParams;
   const success = query.succes;

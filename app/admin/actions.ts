@@ -1,15 +1,17 @@
 "use server";
 
+import bcrypt from "bcryptjs";
 import {
   AppointmentStatus,
   InvoiceLineType,
   PaymentStatus,
   Prisma,
-  RepairStatus
+  RepairStatus,
+  UserRole
 } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { requireAdmin } from "@/lib/auth";
+import { requireAdmin, requireAuthenticatedUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { appointmentStatusLabels, paymentStatusLabels, repairStatusLabels } from "@/lib/status";
 
@@ -69,6 +71,79 @@ async function writeActivity(message: string, entityType?: string, entityId?: st
   });
 }
 
+async function writeActivityAs(
+  userId: string,
+  message: string,
+  entityType?: string,
+  entityId?: string,
+  repairId?: string
+) {
+  await prisma.activityLog.create({
+    data: {
+      userId,
+      message,
+      entityType,
+      entityId,
+      repairId
+    }
+  });
+}
+
+async function requireTechnicianRepairAccess(repairId: string) {
+  const user = await requireAuthenticatedUser();
+  if (user.role === "ADMIN") return user;
+
+  const repair = await prisma.repair.findUnique({
+    where: { id: repairId },
+    select: { technicianId: true }
+  });
+
+  if (!repair || repair.technicianId !== user.id) {
+    redirect("/admin/technicien");
+  }
+
+  return user;
+}
+
+const technicianAllowedStatuses: RepairStatus[] = [
+  RepairStatus.DIAGNOSTIC,
+  RepairStatus.ATTENTE_ACCORD_CLIENT,
+  RepairStatus.ATTENTE_PIECES,
+  RepairStatus.EN_REPARATION,
+  RepairStatus.CONTROLE_QUALITE,
+  RepairStatus.PRET_A_RECUPERER
+];
+
+function requiredTechnicianStatus(value: string) {
+  return technicianAllowedStatuses.includes(value as RepairStatus)
+    ? (value as RepairStatus)
+    : RepairStatus.EN_REPARATION;
+}
+
+async function optionalActiveTechnicianId(
+  value: FormDataEntryValue | null,
+  errorPath: string,
+  existingTechnicianId?: string | null
+) {
+  const technicianId = optional(value);
+  if (!technicianId) return null;
+
+  const technician = await prisma.user.findFirst({
+    where: {
+      id: technicianId,
+      role: UserRole.TECHNICIAN,
+      ...(technicianId === existingTechnicianId ? {} : { isActive: true })
+    },
+    select: { id: true }
+  });
+
+  if (!technician) {
+    redirect(`${errorPath}?erreur=${encodeURIComponent("Veuillez choisir un technicien actif.")}`);
+  }
+
+  return technician.id;
+}
+
 export async function createCustomerAction(formData: FormData) {
   await requireAdmin();
   const customer = await prisma.customer.create({
@@ -117,10 +192,142 @@ export async function addVehicleAction(customerId: string, formData: FormData) {
   redirect(`/admin/clients/${customerId}?succes=vehicule`);
 }
 
+export async function createTechnicianAction(formData: FormData) {
+  await requireAdmin();
+  const name = clean(formData.get("name"));
+  const email = clean(formData.get("email")).toLowerCase();
+  const password = clean(formData.get("password"));
+
+  if (!name || !email || password.length < 6) {
+    redirect(
+      `/admin/techniciens?erreur=${encodeURIComponent(
+        "Veuillez saisir un nom, un e-mail valide et un mot de passe d’au moins 6 caractères."
+      )}`
+    );
+  }
+
+  try {
+    const technician = await prisma.user.create({
+      data: {
+        name,
+        email,
+        phone: optional(formData.get("phone")),
+        role: UserRole.TECHNICIAN,
+        isActive: true,
+        passwordHash: await bcrypt.hash(password, 12)
+      }
+    });
+    await writeActivity(`Technicien ajouté : ${technician.name}`, "User", technician.id);
+  } catch (error) {
+    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2002") {
+      redirect(`/admin/techniciens?erreur=${encodeURIComponent("Cet e-mail est déjà utilisé.")}`);
+    }
+    throw error;
+  }
+
+  revalidatePath("/admin/techniciens");
+  redirect("/admin/techniciens?succes=creation");
+}
+
+export async function updateTechnicianAction(technicianId: string, formData: FormData) {
+  await requireAdmin();
+  const name = clean(formData.get("name"));
+  const email = clean(formData.get("email")).toLowerCase();
+
+  if (!name || !email) {
+    redirect(`/admin/techniciens?erreur=${encodeURIComponent("Le nom et l’e-mail sont obligatoires.")}`);
+  }
+
+  try {
+    const existing = await prisma.user.findFirst({
+      where: { id: technicianId, role: UserRole.TECHNICIAN },
+      select: { id: true }
+    });
+
+    if (!existing) {
+      redirect(`/admin/techniciens?erreur=${encodeURIComponent("Technicien introuvable.")}`);
+    }
+
+    const technician = await prisma.user.update({
+      where: { id: technicianId },
+      data: {
+        name,
+        email,
+        phone: optional(formData.get("phone")),
+        isActive: clean(formData.get("isActive")) === "on"
+      }
+    });
+    await writeActivity(`Technicien modifié : ${technician.name}`, "User", technician.id);
+  } catch (error) {
+    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2002") {
+      redirect(`/admin/techniciens?erreur=${encodeURIComponent("Cet e-mail est déjà utilisé.")}`);
+    }
+    throw error;
+  }
+
+  revalidatePath("/admin/techniciens");
+  redirect("/admin/techniciens?succes=modification");
+}
+
+export async function toggleTechnicianActiveAction(technicianId: string) {
+  await requireAdmin();
+  const technician = await prisma.user.findFirst({
+    where: { id: technicianId, role: UserRole.TECHNICIAN },
+    select: { id: true, name: true, isActive: true }
+  });
+
+  if (!technician) {
+    redirect(`/admin/techniciens?erreur=${encodeURIComponent("Technicien introuvable.")}`);
+  }
+
+  const updated = await prisma.user.update({
+    where: { id: technician.id },
+    data: { isActive: !technician.isActive }
+  });
+
+  await writeActivity(
+    `${updated.isActive ? "Technicien activé" : "Technicien désactivé"} : ${updated.name}`,
+    "User",
+    updated.id
+  );
+  revalidatePath("/admin/techniciens");
+  redirect("/admin/techniciens?succes=statut");
+}
+
+export async function resetTechnicianPasswordAction(technicianId: string, formData: FormData) {
+  await requireAdmin();
+  const password = clean(formData.get("password"));
+
+  if (password.length < 6) {
+    redirect(`/admin/techniciens?erreur=${encodeURIComponent("Le nouveau mot de passe doit contenir au moins 6 caractères.")}`);
+  }
+
+  const existing = await prisma.user.findFirst({
+    where: { id: technicianId, role: UserRole.TECHNICIAN },
+    select: { id: true }
+  });
+
+  if (!existing) {
+    redirect(`/admin/techniciens?erreur=${encodeURIComponent("Technicien introuvable.")}`);
+  }
+
+  const technician = await prisma.user.update({
+    where: { id: technicianId },
+    data: {
+      passwordHash: await bcrypt.hash(password, 12)
+    }
+  });
+
+  await writeActivity(`Mot de passe technicien réinitialisé : ${technician.name}`, "User", technician.id);
+  revalidatePath("/admin/techniciens");
+  redirect("/admin/techniciens?succes=mot-de-passe");
+}
+
 export async function createRepairAction(formData: FormData) {
   await requireAdmin();
   const vehicleId = optional(formData.get("vehicleId"));
   const customerId = clean(formData.get("customerId"));
+  const technicianId = await optionalActiveTechnicianId(formData.get("technicianId"), "/admin/reparations/new");
   const vehicle = vehicleId
     ? await prisma.vehicle.findUnique({ where: { id: vehicleId }, include: { customer: true } })
     : null;
@@ -135,7 +342,7 @@ export async function createRepairAction(formData: FormData) {
       trackingCode: await createTrackingCode(),
       customerId: resolvedCustomerId,
       vehicleId,
-      technicianId: optional(formData.get("technicianId")),
+      technicianId,
       issue: clean(formData.get("issue")),
       status: requiredEnum(RepairStatus, clean(formData.get("status")), RepairStatus.RECEPTION),
       estimatedPrice: optionalMoney(formData.get("estimatedPrice")),
@@ -152,10 +359,19 @@ export async function createRepairAction(formData: FormData) {
 export async function updateRepairAction(repairId: string, formData: FormData) {
   await requireAdmin();
   const status = requiredEnum(RepairStatus, clean(formData.get("status")), RepairStatus.RECEPTION);
+  const currentRepair = await prisma.repair.findUnique({
+    where: { id: repairId },
+    select: { technicianId: true }
+  });
+  const technicianId = await optionalActiveTechnicianId(
+    formData.get("technicianId"),
+    `/admin/reparations/${repairId}`,
+    currentRepair?.technicianId
+  );
   await prisma.repair.update({
     where: { id: repairId },
     data: {
-      technicianId: optional(formData.get("technicianId")),
+      technicianId,
       issue: clean(formData.get("issue")),
       status,
       estimatedPrice: optionalMoney(formData.get("estimatedPrice")),
@@ -324,13 +540,14 @@ export async function updatePaymentStatusAction(invoiceId: string, formData: For
 }
 
 export async function technicianStatusAction(repairId: string, formData: FormData) {
-  await requireAdmin();
-  const status = requiredEnum(RepairStatus, clean(formData.get("status")), RepairStatus.EN_REPARATION);
+  const user = await requireTechnicianRepairAccess(repairId);
+  const status = requiredTechnicianStatus(clean(formData.get("status")));
   await prisma.repair.update({
     where: { id: repairId },
     data: { status }
   });
-  await writeActivity(
+  await writeActivityAs(
+    user.id,
     `Technicien : statut mis à jour ${repairStatusLabels[status]}`,
     "Repair",
     repairId,
@@ -340,12 +557,12 @@ export async function technicianStatusAction(repairId: string, formData: FormDat
 }
 
 export async function markReadyAction(repairId: string) {
-  await requireAdmin();
+  const user = await requireTechnicianRepairAccess(repairId);
   await prisma.repair.update({
     where: { id: repairId },
     data: { status: RepairStatus.PRET_A_RECUPERER }
   });
-  await writeActivity("Technicien : véhicule prêt à récupérer", "Repair", repairId, repairId);
+  await writeActivityAs(user.id, "Technicien : véhicule prêt à récupérer", "Repair", repairId, repairId);
   revalidatePath("/admin/technicien");
 }
 

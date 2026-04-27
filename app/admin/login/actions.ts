@@ -48,8 +48,12 @@ export async function loginAction(formData: FormData) {
     redirect("/admin/login?erreur=Identifiants%20incorrects.");
   }
 
+  if (!user.isActive) {
+    redirect("/admin/login?erreur=Ce%20compte%20est%20désactivé.");
+  }
+
   await setSessionCookie(createSessionToken(user.id));
-  redirect("/admin");
+  redirect(user.role === "TECHNICIAN" ? "/admin/technicien" : "/admin");
 }
 
 export async function logoutAction() {

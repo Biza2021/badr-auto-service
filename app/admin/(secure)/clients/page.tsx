@@ -5,12 +5,14 @@ import { AdminPageHeader } from "@/components/admin-page-header";
 import { EmptyState } from "@/components/empty-state";
 import { PendingButton } from "@/components/pending-button";
 import { createCustomerAction } from "@/app/admin/actions";
+import { requireAdmin } from "@/lib/auth";
 import { formatDate } from "@/lib/format";
 import { prisma } from "@/lib/prisma";
 
 type SearchParams = Promise<Record<string, string | string[] | undefined>>;
 
 export default async function CustomersPage({ searchParams }: { searchParams: SearchParams }) {
+  await requireAdmin();
   const params = await searchParams;
   const q = typeof params.q === "string" ? params.q.trim() : "";
   const customers = await prisma.customer.findMany({

@@ -50,6 +50,7 @@ model User {
   name         String
   phone        String?
   role         UserRole      @default(ADMIN)
+  isActive     Boolean       @default(true)
   passwordHash String
   repairs      Repair[]      @relation("RepairTechnician")
   activities   ActivityLog[]

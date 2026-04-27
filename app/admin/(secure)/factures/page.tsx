@@ -6,6 +6,7 @@ import { EmptyState } from "@/components/empty-state";
 import { PendingButton } from "@/components/pending-button";
 import { StatusBadge } from "@/components/status-badge";
 import { createInvoiceAction } from "@/app/admin/actions";
+import { requireAdmin } from "@/lib/auth";
 import { formatDate, formatMoney } from "@/lib/format";
 import { prisma } from "@/lib/prisma";
 import { paymentStatusLabels } from "@/lib/status";
@@ -13,6 +14,7 @@ import { paymentStatusLabels } from "@/lib/status";
 type SearchParams = Promise<Record<string, string | string[] | undefined>>;
 
 export default async function InvoicesPage({ searchParams }: { searchParams: SearchParams }) {
+  await requireAdmin();
   const params = await searchParams;
   const error = typeof params.erreur === "string" ? params.erreur : null;
   const [invoices, repairs] = await Promise.all([

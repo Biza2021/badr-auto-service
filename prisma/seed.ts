@@ -25,9 +25,11 @@ function money(value: number) {
 
 async function main() {
   const email = process.env.SEED_ADMIN_EMAIL ?? "admin@badrautoservice.ma";
-  const generatedPassword =
-    process.env.SEED_ADMIN_PASSWORD ?? `${randomBytes(10).toString("base64url")}Aa1!`;
-  const passwordHash = await bcrypt.hash(generatedPassword, 12);
+  const generatedPassword = `${randomBytes(10).toString("base64url")}Aa1!`;
+  const demoPassword = process.env.SEED_DEMO_PASSWORD ?? process.env.SEED_ADMIN_PASSWORD ?? generatedPassword;
+  const adminPassword = process.env.SEED_ADMIN_PASSWORD ?? demoPassword;
+  const passwordHash = await bcrypt.hash(adminPassword, 12);
+  const technicianPasswordHash = await bcrypt.hash(demoPassword, 12);
 
   await prisma.$transaction([
     prisma.invoiceLine.deleteMany(),
@@ -47,19 +49,33 @@ async function main() {
       name: "Badr",
       phone: "+212 6 61 24 87 30",
       role: UserRole.ADMIN,
+      isActive: true,
       passwordHash
     }
   });
 
-  const technician = await prisma.user.create({
-    data: {
-      email: "technicien@badrautoservice.ma",
-      name: "Youssef Ait Lahcen",
-      phone: "+212 6 70 12 98 44",
-      role: UserRole.TECHNICIAN,
-      passwordHash
-    }
-  });
+  const [yassineTechnician, mehdiTechnician] = await Promise.all([
+    prisma.user.create({
+      data: {
+        email: "yassine.benali@badrautoservice.ma",
+        name: "Yassine Benali",
+        phone: "+212 6 70 12 98 44",
+        role: UserRole.TECHNICIAN,
+        isActive: true,
+        passwordHash: technicianPasswordHash
+      }
+    }),
+    prisma.user.create({
+      data: {
+        email: "mehdi.elidrissi@badrautoservice.ma",
+        name: "Mehdi El Idrissi",
+        phone: "+212 6 62 35 41 90",
+        role: UserRole.TECHNICIAN,
+        isActive: true,
+        passwordHash: technicianPasswordHash
+      }
+    })
+  ]);
 
   await prisma.garageSettings.create({
     data: {
@@ -176,7 +192,7 @@ async function main() {
       trackingCode: "BAS-2026-1842",
       customerId: ahmed.id,
       vehicleId: ahmed.vehicles[0].id,
-      technicianId: technician.id,
+      technicianId: yassineTechnician.id,
       issue: "Bruit au freinage et vibration légère au volant.",
       status: RepairStatus.EN_REPARATION,
       estimatedPrice: money(1450),
@@ -191,7 +207,7 @@ async function main() {
       trackingCode: "BAS-2026-2397",
       customerId: fatima.id,
       vehicleId: fatima.vehicles[0].id,
-      technicianId: technician.id,
+      technicianId: mehdiTechnician.id,
       issue: "Entretien périodique avec vidange et filtres.",
       status: RepairStatus.PRET_A_RECUPERER,
       estimatedPrice: money(720),
@@ -205,7 +221,7 @@ async function main() {
       trackingCode: "BAS-2026-3150",
       customerId: mehdi.id,
       vehicleId: mehdi.vehicles[0].id,
-      technicianId: technician.id,
+      technicianId: yassineTechnician.id,
       issue: "Voyant moteur allumé, perte de puissance en montée.",
       status: RepairStatus.DIAGNOSTIC,
       estimatedCompletion: addDays(2, 12, 0),
@@ -218,6 +234,7 @@ async function main() {
       trackingCode: "BAS-2026-4026",
       customerId: sara.id,
       vehicleId: sara.vehicles[0].id,
+      technicianId: mehdiTechnician.id,
       issue: "Climatisation faible avant l’été.",
       status: RepairStatus.ATTENTE_ACCORD_CLIENT,
       estimatedPrice: money(980),
@@ -306,7 +323,7 @@ async function main() {
         entityId: repair1.id
       },
       {
-        userId: technician.id,
+        userId: yassineTechnician.id,
         repairId: repair3.id,
         message: "Diagnostic moteur ajouté au planning",
         entityType: "Repair",
@@ -331,8 +348,11 @@ async function main() {
 
   console.log("Seed terminé pour Badr Auto Service.");
   console.log(`Compte admin : ${email}`);
-  if (!process.env.SEED_ADMIN_PASSWORD) {
-    console.log(`Mot de passe genere : ${generatedPassword}`);
+  console.log("Comptes techniciens : yassine.benali@badrautoservice.ma, mehdi.elidrissi@badrautoservice.ma");
+  if (!process.env.SEED_ADMIN_PASSWORD && !process.env.SEED_DEMO_PASSWORD) {
+    console.log(`Mot de passe généré pour la démo : ${generatedPassword}`);
+  } else {
+    console.log("Mot de passe démo : variable SEED_DEMO_PASSWORD ou SEED_ADMIN_PASSWORD.");
   }
 }
 

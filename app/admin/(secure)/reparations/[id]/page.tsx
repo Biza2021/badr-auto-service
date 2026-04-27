@@ -5,6 +5,7 @@ import { AdminPageHeader } from "@/components/admin-page-header";
 import { PendingButton } from "@/components/pending-button";
 import { StatusBadge } from "@/components/status-badge";
 import { markRepairDeliveredAction, updateRepairAction } from "@/app/admin/actions";
+import { requireAdmin } from "@/lib/auth";
 import { displayStaffName } from "@/lib/display";
 import { formatDate, formatDateTime, formatMoney } from "@/lib/format";
 import { prisma } from "@/lib/prisma";
@@ -20,9 +21,11 @@ export default async function RepairDetailPage({
   params: Params;
   searchParams: SearchParams;
 }) {
+  await requireAdmin();
   const { id } = await params;
   const query = await searchParams;
   const success = query.succes;
+  const error = typeof query.erreur === "string" ? query.erreur : null;
   const repair = await prisma.repair.findUnique({
     where: { id },
     include: {
@@ -37,7 +40,10 @@ export default async function RepairDetailPage({
   if (!repair) notFound();
 
   const technicians = await prisma.user.findMany({
-    where: { role: "TECHNICIAN" },
+    where: {
+      role: "TECHNICIAN",
+      OR: [{ isActive: true }, ...(repair.technicianId ? [{ id: repair.technicianId }] : [])]
+    },
     orderBy: { name: "asc" }
   });
 
@@ -70,6 +76,11 @@ export default async function RepairDetailPage({
           Modifications enregistrées.
         </div>
       ) : null}
+      {error ? (
+        <div className="mb-5 rounded-lg border border-rose-200 bg-rose-50 p-4 text-sm font-semibold text-rose-800">
+          {error}
+        </div>
+      ) : null}
 
       <div className="grid gap-6 xl:grid-cols-[1fr_360px]">
         <form action={updateRepairAction.bind(null, repair.id)} className="surface grid gap-5 p-5 lg:grid-cols-2">
@@ -90,6 +101,7 @@ export default async function RepairDetailPage({
               {technicians.map((technician) => (
                 <option key={technician.id} value={technician.id}>
                   {technician.name}
+                  {technician.isActive ? "" : " · Inactif"}
                 </option>
               ))}
             </select>

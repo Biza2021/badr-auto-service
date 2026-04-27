@@ -8,20 +8,26 @@ import {
   Menu,
   Settings,
   Smartphone,
+  UserCog,
   Users,
   Wrench
 } from "lucide-react";
 import { logoutAction } from "@/app/admin/login/actions";
 import { displayStaffName } from "@/lib/display";
 
-const navItems = [
+const adminNavItems = [
   { href: "/admin", label: "Accueil", icon: Home },
   { href: "/admin/reparations", label: "Réparations", icon: ClipboardList },
   { href: "/admin/clients", label: "Clients", icon: Users },
   { href: "/admin/rendez-vous", label: "Rendez-vous", icon: CalendarDays },
   { href: "/admin/factures", label: "Factures", icon: FileText },
   { href: "/admin/technicien", label: "Technicien", icon: Smartphone },
+  { href: "/admin/techniciens", label: "Techniciens", icon: UserCog },
   { href: "/admin/parametres", label: "Paramètres", icon: Settings }
+];
+
+const technicianNavItems = [
+  { href: "/admin/technicien", label: "Espace technicien", icon: Smartphone }
 ];
 
 export function AdminShell({
@@ -29,9 +35,10 @@ export function AdminShell({
   user
 }: {
   children: React.ReactNode;
-  user: { name: string; email: string };
+  user: { name: string; email: string; role: "ADMIN" | "TECHNICIAN" };
 }) {
   const displayName = displayStaffName(user.name);
+  const navItems = user.role === "ADMIN" ? adminNavItems : technicianNavItems;
 
   return (
     <div className="min-h-screen bg-mist text-slate-900 lg:flex">

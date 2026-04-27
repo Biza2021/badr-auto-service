@@ -6,6 +6,7 @@ import { EmptyState } from "@/components/empty-state";
 import { PendingButton } from "@/components/pending-button";
 import { StatusBadge } from "@/components/status-badge";
 import { addVehicleAction, updateCustomerAction } from "@/app/admin/actions";
+import { requireAdmin } from "@/lib/auth";
 import { formatDate, formatMoney } from "@/lib/format";
 import { prisma } from "@/lib/prisma";
 import { repairStatusLabels } from "@/lib/status";
@@ -20,6 +21,7 @@ export default async function CustomerDetailPage({
   params: Params;
   searchParams: SearchParams;
 }) {
+  await requireAdmin();
   const { id } = await params;
   const query = await searchParams;
   const success = query.succes;

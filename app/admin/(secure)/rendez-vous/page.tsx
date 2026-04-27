@@ -5,6 +5,7 @@ import { EmptyState } from "@/components/empty-state";
 import { PendingButton } from "@/components/pending-button";
 import { StatusBadge } from "@/components/status-badge";
 import { createAdminAppointmentAction, updateAppointmentStatusAction } from "@/app/admin/actions";
+import { requireAdmin } from "@/lib/auth";
 import { formatDateTime } from "@/lib/format";
 import { prisma } from "@/lib/prisma";
 import { appointmentStatusLabels } from "@/lib/status";
@@ -24,6 +25,7 @@ const services = [
 ];
 
 export default async function AppointmentsPage({ searchParams }: { searchParams: SearchParams }) {
+  await requireAdmin();
   const params = await searchParams;
   const status = typeof params.statut === "string" ? params.statut : "";
   const q = typeof params.q === "string" ? params.q.trim() : "";

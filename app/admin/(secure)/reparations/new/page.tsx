@@ -1,5 +1,6 @@
 import { AdminPageHeader } from "@/components/admin-page-header";
 import { PendingButton } from "@/components/pending-button";
+import { requireAdmin } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { repairStatusLabels } from "@/lib/status";
 import { createRepairAction } from "@/app/admin/actions";
@@ -7,12 +8,13 @@ import { createRepairAction } from "@/app/admin/actions";
 type SearchParams = Promise<Record<string, string | string[] | undefined>>;
 
 export default async function NewRepairPage({ searchParams }: { searchParams: SearchParams }) {
+  await requireAdmin();
   const params = await searchParams;
   const error = typeof params.erreur === "string" ? params.erreur : null;
   const [customers, vehicles, technicians] = await Promise.all([
     prisma.customer.findMany({ orderBy: { fullName: "asc" } }),
     prisma.vehicle.findMany({ include: { customer: true }, orderBy: [{ brand: "asc" }, { model: "asc" }] }),
-    prisma.user.findMany({ where: { role: "TECHNICIAN" }, orderBy: { name: "asc" } })
+    prisma.user.findMany({ where: { role: "TECHNICIAN", isActive: true }, orderBy: { name: "asc" } })
   ]);
 
   return (

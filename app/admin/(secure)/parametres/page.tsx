@@ -2,11 +2,13 @@ import { CheckCircle2, Settings } from "lucide-react";
 import { AdminPageHeader } from "@/components/admin-page-header";
 import { PendingButton } from "@/components/pending-button";
 import { updateGarageSettingsAction } from "@/app/admin/actions";
+import { requireAdmin } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
 type SearchParams = Promise<Record<string, string | string[] | undefined>>;
 
 export default async function SettingsPage({ searchParams }: { searchParams: SearchParams }) {
+  await requireAdmin();
   const params = await searchParams;
   const success = params.succes;
   const settings =

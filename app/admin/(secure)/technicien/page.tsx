@@ -3,13 +3,22 @@ import { AdminPageHeader } from "@/components/admin-page-header";
 import { EmptyState } from "@/components/empty-state";
 import { StatusBadge } from "@/components/status-badge";
 import { markReadyAction, technicianStatusAction } from "@/app/admin/actions";
-import { getCurrentUser } from "@/lib/auth";
+import { requireAuthenticatedUser } from "@/lib/auth";
 import { formatDate } from "@/lib/format";
 import { prisma } from "@/lib/prisma";
 import { repairStatusLabels } from "@/lib/status";
 
+const technicianStatusOptions = [
+  "DIAGNOSTIC",
+  "ATTENTE_ACCORD_CLIENT",
+  "ATTENTE_PIECES",
+  "EN_REPARATION",
+  "CONTROLE_QUALITE",
+  "PRET_A_RECUPERER"
+] as const;
+
 export default async function TechnicianPage() {
-  const user = await getCurrentUser();
+  const user = await requireAuthenticatedUser();
   const repairs = await prisma.repair.findMany({
     where:
       user?.role === "TECHNICIAN"
@@ -28,17 +37,21 @@ export default async function TechnicianPage() {
     <>
       <AdminPageHeader
         eyebrow="Technicien"
-        title="Travail du jour"
-        text="Une vue rapide pour lire les dossiers assignés, changer un statut et marquer un véhicule prêt depuis le téléphone."
+        title={user.role === "ADMIN" ? "Aperçu atelier mobile" : "Travail du jour"}
+        text={
+          user.role === "ADMIN"
+            ? "Badr peut prévisualiser les cartes de travail et vérifier les réparations assignées aux techniciens."
+            : "Une vue rapide pour lire vos dossiers assignés, changer un statut et marquer un véhicule prêt depuis le téléphone."
+        }
       />
 
-      <section className="mx-auto max-w-xl space-y-4">
+      <section className="mx-auto max-w-2xl space-y-4">
         {repairs.length === 0 ? (
           <EmptyState title="Aucune réparation assignée" text="Les dossiers actifs assignés apparaîtront ici." />
         ) : (
           repairs.map((repair) => (
             <article className="surface overflow-hidden" key={repair.id}>
-              <div className="bg-navy p-4 text-white">
+              <div className="bg-navy p-5 text-white">
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0">
                     <p className="text-sm font-semibold text-orange-100">{repair.trackingCode}</p>
@@ -49,8 +62,13 @@ export default async function TechnicianPage() {
                 <p className="mt-2 text-sm font-medium text-slate-200">
                   {repair.vehicle ? `${repair.vehicle.brand} ${repair.vehicle.model}` : "Véhicule non renseigné"}
                 </p>
+                {user.role === "ADMIN" ? (
+                  <p className="mt-1 text-xs font-semibold text-orange-100">
+                    Technicien assigné : {repair.technician?.name ?? "Non assigné"}
+                  </p>
+                ) : null}
               </div>
-              <div className="p-4">
+              <div className="p-5">
                 <div className="grid gap-3 sm:flex sm:flex-wrap sm:items-center sm:justify-between">
                   <StatusBadge label={repairStatusLabels[repair.status]} status={repair.status} />
                   <p className="text-sm font-semibold text-slate-600">
@@ -76,25 +94,29 @@ export default async function TechnicianPage() {
                     <p className="text-sm font-bold text-navy">Notes internes</p>
                     <p className="mt-2 text-sm leading-6 text-slate-600">{repair.internalNotes}</p>
                   </div>
-                ) : null}
+                ) : (
+                  <div className="mt-4 rounded-lg border border-dashed border-slate-200 p-4 text-sm font-medium text-slate-500">
+                    Aucune note interne pour ce dossier.
+                  </div>
+                )}
                 <form action={technicianStatusAction.bind(null, repair.id)} className="mt-4 grid gap-3">
                   <label>
                     <span className="field-label">Mettre à jour le statut</span>
                     <select className="field-input" name="status" defaultValue={repair.status}>
-                      {Object.entries(repairStatusLabels).map(([value, label]) => (
+                      {technicianStatusOptions.map((value) => (
                         <option key={value} value={value}>
-                          {label}
+                          {repairStatusLabels[value]}
                         </option>
                       ))}
                     </select>
                   </label>
-                  <button className="btn-secondary w-full" type="submit">
+                  <button className="btn-secondary w-full py-3" type="submit">
                     <ClipboardCheck className="h-4 w-4" aria-hidden="true" />
                     Mettre à jour
                   </button>
                 </form>
                 <form action={markReadyAction.bind(null, repair.id)} className="mt-3">
-                  <button className="btn-primary w-full" type="submit">
+                  <button className="btn-primary w-full py-3" type="submit">
                     Marquer comme prêt
                   </button>
                 </form>

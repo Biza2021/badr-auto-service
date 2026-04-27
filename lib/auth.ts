@@ -67,15 +67,29 @@ export async function getCurrentUser() {
 
   return prisma.user.findUnique({
     where: { id: userId },
-    select: { id: true, email: true, name: true, role: true }
+    select: { id: true, email: true, name: true, role: true, isActive: true }
   });
 }
 
-export async function requireAdmin() {
+export async function requireAuthenticatedUser() {
   const user = await getCurrentUser();
   if (!user) {
     redirect("/admin/login");
   }
+
+  if (!user.isActive) {
+    redirect("/admin/login?erreur=Compte%20désactivé.");
+  }
+
+  return user;
+}
+
+export async function requireAdmin() {
+  const user = await requireAuthenticatedUser();
+  if (user.role !== "ADMIN") {
+    redirect("/admin/technicien");
+  }
+
   return user;
 }
 
