@@ -5,6 +5,7 @@ import { AdminPageHeader } from "@/components/admin-page-header";
 import { EmptyState } from "@/components/empty-state";
 import { StatCard } from "@/components/stat-card";
 import { StatusBadge } from "@/components/status-badge";
+import { displayStaffName } from "@/lib/display";
 import { formatDateTime } from "@/lib/format";
 import { prisma } from "@/lib/prisma";
 import { appointmentStatusLabels, repairStatusLabels } from "@/lib/status";
@@ -101,8 +102,8 @@ export default async function AdminDashboardPage() {
               <EmptyState title="Aucune réparation" text="Les nouveaux dossiers apparaîtront ici." />
             </div>
           ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full min-w-[720px] text-left text-sm">
+            <div className="overflow-x-auto sm:overflow-visible">
+              <table className="mobile-card-table min-w-[720px] sm:min-w-0">
                 <thead className="bg-slate-50 text-xs uppercase text-slate-500">
                   <tr>
                     <th className="px-5 py-3">Code</th>
@@ -115,15 +116,15 @@ export default async function AdminDashboardPage() {
                 <tbody className="divide-y divide-slate-100">
                   {recentRepairs.map((repair) => (
                     <tr key={repair.id}>
-                      <td className="px-5 py-4 font-semibold text-navy">{repair.trackingCode}</td>
-                      <td className="px-5 py-4">{repair.customer.fullName}</td>
-                      <td className="px-5 py-4">
+                      <td data-label="Code" className="px-5 py-4 font-semibold text-navy">{repair.trackingCode}</td>
+                      <td data-label="Client" className="px-5 py-4">{repair.customer.fullName}</td>
+                      <td data-label="Véhicule" className="px-5 py-4">
                         {repair.vehicle ? `${repair.vehicle.brand} ${repair.vehicle.model}` : "Non renseigné"}
                       </td>
-                      <td className="px-5 py-4">
+                      <td data-label="Statut" className="px-5 py-4">
                         <StatusBadge label={repairStatusLabels[repair.status]} status={repair.status} />
                       </td>
-                      <td className="px-5 py-4">
+                      <td data-label="Action" className="px-5 py-4">
                         <Link
                           className="font-semibold text-accent hover:text-orange-700"
                           href={`/admin/reparations/${repair.id}`}
@@ -165,7 +166,7 @@ export default async function AdminDashboardPage() {
                 <div className="px-5 py-4" key={activity.id}>
                   <p className="text-sm font-semibold text-slate-800">{activity.message}</p>
                   <p className="mt-1 text-xs text-slate-500">
-                    {activity.user?.name ?? "Système"} · {formatDateTime(activity.createdAt)}
+                    {activity.user ? displayStaffName(activity.user.name) : "Système"} · {formatDateTime(activity.createdAt)}
                   </p>
                 </div>
               ))

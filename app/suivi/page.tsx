@@ -35,11 +35,11 @@ export default async function TrackingPage({ searchParams }: { searchParams: Sea
   return (
     <PublicShell>
       <main className="bg-mist">
-        <section className="bg-white py-14">
-          <div className="container-page grid gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
+        <section className="bg-white py-12 sm:py-14">
+          <div className="container-page grid gap-8 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
             <div>
               <p className="text-sm font-bold uppercase tracking-wide text-accent">Suivi réparation</p>
-              <h1 className="mt-2 text-4xl font-bold text-navy">Suivre l’avancement de votre véhicule</h1>
+              <h1 className="mt-2 text-3xl font-bold text-navy sm:text-4xl">Suivre l’avancement de votre véhicule</h1>
               <p className="mt-4 text-base leading-7 text-slate-600">
                 Entrez le code de suivi remis par le garage. La page affiche uniquement les informations
                 liées à ce code.
@@ -55,7 +55,7 @@ export default async function TrackingPage({ searchParams }: { searchParams: Sea
                   name="code"
                   placeholder="Ex. BAS-2026-1842"
                 />
-                <button className="btn-primary" type="submit">
+                <button className="btn-primary w-full sm:w-auto" type="submit">
                   <Search className="h-4 w-4" aria-hidden="true" />
                   Rechercher
                 </button>
@@ -64,13 +64,13 @@ export default async function TrackingPage({ searchParams }: { searchParams: Sea
             <ImagePanel
               src="/images/admin/06-customer-repair-tracking-ui-badr-auto-service.png"
               alt="Suivi de réparation avec code client"
-              className="min-h-[330px]"
+              className="min-h-[260px] sm:min-h-[330px]"
               priority
             />
           </div>
         </section>
 
-        <section className="py-14">
+        <section className="py-12 sm:py-14">
           <div className="container-page">
             {!code ? (
               <EmptyState
@@ -84,7 +84,7 @@ export default async function TrackingPage({ searchParams }: { searchParams: Sea
               />
             ) : (
               <div className="grid gap-6 lg:grid-cols-[0.95fr_1.05fr]">
-                <section className="surface p-6">
+                <section className="surface p-5 sm:p-6">
                   <div className="flex flex-wrap items-start justify-between gap-4">
                     <div>
                       <p className="text-sm font-semibold text-slate-500">Code de suivi</p>
@@ -117,7 +117,7 @@ export default async function TrackingPage({ searchParams }: { searchParams: Sea
                     </div>
                   </dl>
                   <Link
-                    className="btn-dark mt-6"
+                    className="btn-dark mt-6 w-full sm:w-auto"
                     href="https://wa.me/212661248730"
                     target="_blank"
                     rel="noreferrer"
@@ -126,7 +126,7 @@ export default async function TrackingPage({ searchParams }: { searchParams: Sea
                     Contacter le garage
                   </Link>
                 </section>
-                <section className="surface p-6">
+                <section className="surface p-5 sm:p-6">
                   <div className="flex items-center gap-3">
                     <ClipboardCheck className="h-6 w-6 text-accent" aria-hidden="true" />
                     <h2 className="text-xl font-bold text-navy">Progression</h2>
@@ -173,8 +173,8 @@ export default async function TrackingPage({ searchParams }: { searchParams: Sea
           </div>
         </section>
 
-        <section className="bg-white py-14">
-          <div className="container-page grid gap-10 lg:grid-cols-[1fr_0.95fr] lg:items-center">
+        <section className="bg-white py-12 sm:py-14">
+          <div className="container-page grid gap-8 lg:grid-cols-[1fr_0.95fr] lg:items-center">
             <div>
               <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-orange-50 text-accent">
                 <Wrench className="h-6 w-6" aria-hidden="true" />
@@ -188,7 +188,7 @@ export default async function TrackingPage({ searchParams }: { searchParams: Sea
             <ImagePanel
               src="/images/customer/11-repair-documentation-badr-auto-service.png"
               alt="Documentation du suivi de réparation"
-              className="min-h-[300px]"
+              className="min-h-[240px] sm:min-h-[300px]"
             />
           </div>
         </section>

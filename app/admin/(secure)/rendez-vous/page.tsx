@@ -62,7 +62,7 @@ export default async function AppointmentsPage({ searchParams }: { searchParams:
       ) : null}
 
       <section className="surface mb-6 overflow-hidden">
-        <div className="relative h-48 bg-slate-200">
+        <div className="relative h-36 bg-slate-200 sm:h-48">
           <Image
             src="/images/admin/14-appointment-calendar-admin-ui-badr-auto-service.png"
             alt="Calendrier rendez-vous Badr Auto Service"
@@ -104,8 +104,8 @@ export default async function AppointmentsPage({ searchParams }: { searchParams:
               <EmptyState title="Aucun rendez-vous" text="Les demandes en ligne et les ajouts manuels apparaîtront ici." />
             </div>
           ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full min-w-[980px] text-left text-sm">
+            <div className="overflow-x-auto sm:overflow-visible">
+              <table className="mobile-card-table min-w-[980px] sm:min-w-0">
                 <thead className="bg-slate-50 text-xs uppercase text-slate-500">
                   <tr>
                     <th className="px-5 py-3">Date</th>
@@ -119,24 +119,24 @@ export default async function AppointmentsPage({ searchParams }: { searchParams:
                 <tbody className="divide-y divide-slate-100">
                   {appointments.map((appointment) => (
                     <tr key={appointment.id}>
-                      <td className="px-5 py-4 font-semibold text-navy">
+                      <td data-label="Date" className="px-5 py-4 font-semibold text-navy">
                         {formatDateTime(appointment.desiredDateTime)}
                       </td>
-                      <td className="px-5 py-4">
+                      <td data-label="Client" className="px-5 py-4">
                         <p className="font-semibold">{appointment.fullName}</p>
                         <p className="text-xs text-slate-500">{appointment.phone}</p>
                       </td>
-                      <td className="px-5 py-4">
+                      <td data-label="Véhicule" className="px-5 py-4">
                         <p>{appointment.vehicleText}</p>
                         <p className="text-xs text-slate-500">{appointment.licensePlate ?? "Matricule non renseigné"}</p>
                       </td>
-                      <td className="px-5 py-4">{appointment.serviceType}</td>
-                      <td className="px-5 py-4">
+                      <td data-label="Service" className="px-5 py-4">{appointment.serviceType}</td>
+                      <td data-label="Statut" className="px-5 py-4">
                         <StatusBadge label={appointmentStatusLabels[appointment.status]} status={appointment.status} />
                       </td>
-                      <td className="px-5 py-4">
-                        <form action={updateAppointmentStatusAction.bind(null, appointment.id)} className="flex gap-2">
-                          <select className="field-input mt-0 min-w-40" name="status" defaultValue={appointment.status}>
+                      <td data-label="Changer" className="px-5 py-4">
+                        <form action={updateAppointmentStatusAction.bind(null, appointment.id)} className="grid gap-2 sm:flex">
+                          <select className="field-input mt-0 min-w-0 sm:min-w-40" name="status" defaultValue={appointment.status}>
                             {Object.entries(appointmentStatusLabels).map(([value, label]) => (
                               <option key={value} value={value}>
                                 {label}

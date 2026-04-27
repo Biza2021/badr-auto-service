@@ -18,6 +18,7 @@ body {
   min-height: 100vh;
   background: #f5f7fa;
   color: #222831;
+  overflow-x: hidden;
 }
 
 ::selection {
@@ -40,22 +41,84 @@ select {
   }
 
   .field-input {
-    @apply mt-2 w-full rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-900 outline-none transition focus:border-accent focus:ring-4 focus:ring-orange-100;
+    @apply mt-2 w-full rounded-lg border border-slate-200 bg-white px-3 py-3 text-base text-slate-900 outline-none transition focus:border-accent focus:ring-4 focus:ring-orange-100 sm:py-2.5 sm:text-sm;
   }
 
   .btn-primary {
-    @apply inline-flex items-center justify-center gap-2 rounded-lg bg-accent px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-orange-600 focus:outline-none focus:ring-4 focus:ring-orange-100;
+    @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-lg bg-accent px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-orange-600 focus:outline-none focus:ring-4 focus:ring-orange-100;
   }
 
   .btn-secondary {
-    @apply inline-flex items-center justify-center gap-2 rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-900 shadow-sm transition hover:border-slate-300 hover:bg-slate-50 focus:outline-none focus:ring-4 focus:ring-slate-100;
+    @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-900 shadow-sm transition hover:border-slate-300 hover:bg-slate-50 focus:outline-none focus:ring-4 focus:ring-slate-100;
   }
 
   .btn-dark {
-    @apply inline-flex items-center justify-center gap-2 rounded-lg bg-navy px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-slate-800 focus:outline-none focus:ring-4 focus:ring-slate-200;
+    @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-lg bg-navy px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-slate-800 focus:outline-none focus:ring-4 focus:ring-slate-200;
   }
 
   .surface {
     @apply rounded-lg border border-slate-200 bg-white shadow-soft;
+  }
+
+  .mobile-card-table {
+    @apply w-full text-left text-sm;
+  }
+}
+
+@media (max-width: 639px) {
+  .mobile-card-table {
+    min-width: 0 !important;
+  }
+
+  .mobile-card-table thead {
+    display: none;
+  }
+
+  .mobile-card-table tbody {
+    display: grid;
+    gap: 0.75rem;
+    padding: 0.75rem;
+  }
+
+  .mobile-card-table tr {
+    display: block;
+    border: 1px solid #e2e8f0;
+    border-radius: 0.5rem;
+    background: #fff;
+    padding: 0.85rem;
+  }
+
+  .mobile-card-table td {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    border: 0;
+    padding: 0.45rem 0;
+    text-align: right;
+  }
+
+  .mobile-card-table td::before {
+    content: attr(data-label);
+    flex: 0 0 42%;
+    text-align: left;
+    font-weight: 700;
+    color: #64748b;
+  }
+
+  .mobile-card-table td[data-label="Action"],
+  .mobile-card-table td[data-label="Changer"] {
+    display: block;
+    padding-top: 0.75rem;
+    text-align: left;
+  }
+
+  .mobile-card-table td[data-label="Action"]::before,
+  .mobile-card-table td[data-label="Changer"]::before {
+    display: none;
+  }
+
+  .mobile-card-table td form {
+    width: 100%;
   }
 }

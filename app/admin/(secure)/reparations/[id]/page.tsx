@@ -5,6 +5,7 @@ import { AdminPageHeader } from "@/components/admin-page-header";
 import { PendingButton } from "@/components/pending-button";
 import { StatusBadge } from "@/components/status-badge";
 import { markRepairDeliveredAction, updateRepairAction } from "@/app/admin/actions";
+import { displayStaffName } from "@/lib/display";
 import { formatDate, formatDateTime, formatMoney } from "@/lib/format";
 import { prisma } from "@/lib/prisma";
 import { repairStatusLabels } from "@/lib/status";
@@ -182,7 +183,7 @@ export default async function RepairDetailPage({
                   <div key={activity.id}>
                     <p className="text-sm font-semibold text-slate-800">{activity.message}</p>
                     <p className="mt-1 text-xs text-slate-500">
-                      {activity.user?.name ?? "Système"} · {formatDateTime(activity.createdAt)}
+                      {activity.user ? displayStaffName(activity.user.name) : "Système"} · {formatDateTime(activity.createdAt)}
                     </p>
                   </div>
                 ))

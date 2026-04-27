@@ -39,7 +39,7 @@ export default async function CustomersPage({ searchParams }: { searchParams: Se
       />
 
       <section className="surface mb-6 overflow-hidden">
-        <div className="relative h-48 bg-slate-200">
+        <div className="relative h-36 bg-slate-200 sm:h-48">
           <Image
             src="/images/admin/09-customer-management-page-badr-auto-service.png"
             alt="Gestion des clients Badr Auto Service"
@@ -75,8 +75,8 @@ export default async function CustomersPage({ searchParams }: { searchParams: Se
               <EmptyState title="Aucun client trouvé" text="Créez une fiche client ou ajustez la recherche." />
             </div>
           ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full min-w-[780px] text-left text-sm">
+            <div className="overflow-x-auto sm:overflow-visible">
+              <table className="mobile-card-table min-w-[780px] sm:min-w-0">
                 <thead className="bg-slate-50 text-xs uppercase text-slate-500">
                   <tr>
                     <th className="px-5 py-3">Client</th>
@@ -90,12 +90,12 @@ export default async function CustomersPage({ searchParams }: { searchParams: Se
                 <tbody className="divide-y divide-slate-100">
                   {customers.map((customer) => (
                     <tr key={customer.id}>
-                      <td className="px-5 py-4 font-bold text-navy">{customer.fullName}</td>
-                      <td className="px-5 py-4">{customer.phone}</td>
-                      <td className="px-5 py-4">{customer.vehicles.length}</td>
-                      <td className="px-5 py-4">{customer.repairs.length}</td>
-                      <td className="px-5 py-4">{formatDate(customer.createdAt)}</td>
-                      <td className="px-5 py-4">
+                      <td data-label="Client" className="px-5 py-4 font-bold text-navy">{customer.fullName}</td>
+                      <td data-label="Téléphone" className="px-5 py-4">{customer.phone}</td>
+                      <td data-label="Véhicules" className="px-5 py-4">{customer.vehicles.length}</td>
+                      <td data-label="Réparations" className="px-5 py-4">{customer.repairs.length}</td>
+                      <td data-label="Créé le" className="px-5 py-4">{formatDate(customer.createdAt)}</td>
+                      <td data-label="Action" className="px-5 py-4">
                         <Link className="font-semibold text-accent hover:text-orange-700" href={`/admin/clients/${customer.id}`}>
                           Ouvrir
                         </Link>

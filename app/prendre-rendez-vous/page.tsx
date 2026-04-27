@@ -32,8 +32,8 @@ export default async function AppointmentPage({ searchParams }: { searchParams: 
   return (
     <PublicShell>
       <main className="bg-mist">
-        <section className="bg-white py-14">
-          <div className="container-page grid gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
+        <section className="bg-white py-12 sm:py-14">
+          <div className="container-page grid gap-8 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
             <div>
               <SectionHeading
                 eyebrow="Rendez-vous"
@@ -55,13 +55,13 @@ export default async function AppointmentPage({ searchParams }: { searchParams: 
             <ImagePanel
               src="/images/customer/04-online-appointment-booking-badr-auto-service.png"
               alt="Formulaire de rendez-vous Badr Auto Service"
-              className="min-h-[330px]"
+              className="min-h-[260px] sm:min-h-[330px]"
               priority
             />
           </div>
         </section>
 
-        <section className="py-14">
+        <section className="py-12 sm:py-14">
           <div className="container-page">
             <form action={createPublicAppointment} className="surface grid gap-6 p-5 sm:p-7 lg:grid-cols-2">
               <label className="block">
@@ -107,7 +107,7 @@ export default async function AppointmentPage({ searchParams }: { searchParams: 
                 <span className="field-label">Notes complémentaires</span>
                 <textarea className="field-input min-h-24" name="notes" />
               </label>
-              <div className="flex items-center justify-between gap-4 lg:col-span-2">
+              <div className="flex flex-col gap-4 lg:col-span-2 lg:flex-row lg:items-center lg:justify-between">
                 <p className="text-sm text-slate-600">
                   Les informations servent uniquement à organiser votre passage au garage.
                 </p>

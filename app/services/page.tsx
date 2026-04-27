@@ -60,8 +60,8 @@ export default function ServicesPage() {
   return (
     <PublicShell>
       <main className="bg-mist">
-        <section className="bg-white py-14">
-          <div className="container-page grid gap-10 lg:grid-cols-[0.95fr_1.05fr] lg:items-center">
+        <section className="bg-white py-12 sm:py-14">
+          <div className="container-page grid gap-8 lg:grid-cols-[0.95fr_1.05fr] lg:items-center">
             <div>
               <SectionHeading
                 eyebrow="Services"
@@ -72,12 +72,12 @@ export default function ServicesPage() {
             <ImagePanel
               src="/images/customer/02-services-overview-badr-auto-service.png"
               alt="Aperçu des services Badr Auto Service"
-              className="min-h-[320px]"
+              className="min-h-[260px] sm:min-h-[320px]"
               priority
             />
           </div>
         </section>
-        <section className="py-14">
+        <section className="py-12 sm:py-14">
           <div className="container-page grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {services.map((service) => {
               const Icon = service.icon;

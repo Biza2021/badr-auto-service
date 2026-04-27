@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { CalendarCheck, MapPin, PhoneCall, Wrench } from "lucide-react";
+import { CalendarCheck, MapPin, Menu, PhoneCall, Wrench } from "lucide-react";
 
 const navItems = [
   { href: "/services", label: "Services" },
@@ -11,7 +11,7 @@ const navItems = [
 export function PublicHeader() {
   return (
     <header className="sticky top-0 z-40 border-b border-slate-200 bg-white/95 backdrop-blur">
-      <div className="container-page flex min-h-16 flex-col gap-3 py-3 md:flex-row md:items-center md:justify-between">
+      <div className="container-page flex min-h-16 items-center justify-between gap-3 py-3">
         <Link href="/" className="flex items-center gap-3" aria-label="Accueil Badr Auto Service">
           <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-navy text-white">
             <Wrench className="h-5 w-5" aria-hidden="true" />
@@ -21,7 +21,7 @@ export function PublicHeader() {
             <span className="block text-xs font-medium text-slate-500">Garage mécanique à Casablanca</span>
           </span>
         </Link>
-        <nav className="flex flex-wrap items-center gap-2 text-sm font-semibold text-slate-700">
+        <nav className="hidden flex-wrap items-center gap-2 text-sm font-semibold text-slate-700 md:flex">
           {navItems.map((item) => (
             <Link
               className="rounded-lg px-3 py-2 transition hover:bg-slate-100 hover:text-navy"
@@ -36,6 +36,22 @@ export function PublicHeader() {
             Prendre rendez-vous
           </Link>
         </nav>
+        <details className="relative md:hidden">
+          <summary className="btn-secondary list-none px-3 py-2" aria-label="Ouvrir le menu">
+            <Menu className="h-4 w-4" aria-hidden="true" />
+          </summary>
+          <nav className="absolute right-0 mt-3 grid w-64 gap-2 rounded-lg border border-slate-200 bg-white p-3 text-sm font-semibold text-slate-800 shadow-soft">
+            {navItems.map((item) => (
+              <Link className="rounded-lg bg-slate-50 px-3 py-3" href={item.href} key={item.href}>
+                {item.label}
+              </Link>
+            ))}
+            <Link className="btn-primary w-full" href="/prendre-rendez-vous">
+              <CalendarCheck className="h-4 w-4" aria-hidden="true" />
+              Prendre rendez-vous
+            </Link>
+          </nav>
+        </details>
       </div>
     </header>
   );

@@ -50,7 +50,7 @@ export default async function RepairsPage({ searchParams }: { searchParams: Sear
       />
 
       <section className="surface mb-6 overflow-hidden">
-        <div className="relative h-48 bg-slate-200">
+        <div className="relative h-36 bg-slate-200 sm:h-48">
           <Image
             src="/images/admin/08-repair-management-page-badr-auto-service.png"
             alt="Gestion des réparations Badr Auto Service"
@@ -96,8 +96,8 @@ export default async function RepairsPage({ searchParams }: { searchParams: Sear
             <EmptyState title="Aucune réparation trouvée" text="Ajustez les filtres ou créez un nouveau dossier." />
           </div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full min-w-[980px] text-left text-sm">
+          <div className="overflow-x-auto sm:overflow-visible">
+            <table className="mobile-card-table min-w-[980px] sm:min-w-0">
               <thead className="bg-slate-50 text-xs uppercase text-slate-500">
                 <tr>
                   <th className="px-5 py-3">Code</th>
@@ -113,18 +113,18 @@ export default async function RepairsPage({ searchParams }: { searchParams: Sear
               <tbody className="divide-y divide-slate-100">
                 {repairs.map((repair) => (
                   <tr key={repair.id}>
-                    <td className="px-5 py-4 font-bold text-navy">{repair.trackingCode}</td>
-                    <td className="px-5 py-4">{repair.customer.fullName}</td>
-                    <td className="px-5 py-4">
+                    <td data-label="Code" className="px-5 py-4 font-bold text-navy">{repair.trackingCode}</td>
+                    <td data-label="Client" className="px-5 py-4">{repair.customer.fullName}</td>
+                    <td data-label="Véhicule" className="px-5 py-4">
                       {repair.vehicle ? `${repair.vehicle.brand} ${repair.vehicle.model}` : "Non renseigné"}
                     </td>
-                    <td className="px-5 py-4">
+                    <td data-label="Statut" className="px-5 py-4">
                       <StatusBadge label={repairStatusLabels[repair.status]} status={repair.status} />
                     </td>
-                    <td className="px-5 py-4">{repair.technician?.name ?? "Non assigné"}</td>
-                    <td className="px-5 py-4">{formatMoney(repair.estimatedPrice)}</td>
-                    <td className="px-5 py-4">{formatDate(repair.estimatedCompletion)}</td>
-                    <td className="px-5 py-4">
+                    <td data-label="Technicien" className="px-5 py-4">{repair.technician?.name ?? "Non assigné"}</td>
+                    <td data-label="Prix estimé" className="px-5 py-4">{formatMoney(repair.estimatedPrice)}</td>
+                    <td data-label="Fin estimée" className="px-5 py-4">{formatDate(repair.estimatedCompletion)}</td>
+                    <td data-label="Action" className="px-5 py-4">
                       <Link className="font-semibold text-accent hover:text-orange-700" href={`/admin/reparations/${repair.id}`}>
                         Détails
                       </Link>

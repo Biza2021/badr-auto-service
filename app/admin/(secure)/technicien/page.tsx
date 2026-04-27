@@ -28,8 +28,8 @@ export default async function TechnicianPage() {
     <>
       <AdminPageHeader
         eyebrow="Technicien"
-        title="Tableau mobile atelier"
-        text="Vue compacte pour suivre les réparations assignées, les détails client et les actions rapides."
+        title="Travail du jour"
+        text="Une vue rapide pour lire les dossiers assignés, changer un statut et marquer un véhicule prêt depuis le téléphone."
       />
 
       <section className="mx-auto max-w-xl space-y-4">
@@ -40,18 +40,18 @@ export default async function TechnicianPage() {
             <article className="surface overflow-hidden" key={repair.id}>
               <div className="bg-navy p-4 text-white">
                 <div className="flex items-start justify-between gap-3">
-                  <div>
+                  <div className="min-w-0">
                     <p className="text-sm font-semibold text-orange-100">{repair.trackingCode}</p>
-                    <h2 className="mt-1 text-xl font-bold">{repair.customer.fullName}</h2>
+                    <h2 className="mt-1 text-xl font-bold leading-tight">{repair.customer.fullName}</h2>
                   </div>
                   <Smartphone className="h-5 w-5 text-orange-200" aria-hidden="true" />
                 </div>
-                <p className="mt-2 text-sm text-slate-200">
+                <p className="mt-2 text-sm font-medium text-slate-200">
                   {repair.vehicle ? `${repair.vehicle.brand} ${repair.vehicle.model}` : "Véhicule non renseigné"}
                 </p>
               </div>
               <div className="p-4">
-                <div className="flex flex-wrap items-center justify-between gap-3">
+                <div className="grid gap-3 sm:flex sm:flex-wrap sm:items-center sm:justify-between">
                   <StatusBadge label={repairStatusLabels[repair.status]} status={repair.status} />
                   <p className="text-sm font-semibold text-slate-600">
                     Fin estimée : {formatDate(repair.estimatedCompletion)}
@@ -88,7 +88,7 @@ export default async function TechnicianPage() {
                       ))}
                     </select>
                   </label>
-                  <button className="btn-secondary" type="submit">
+                  <button className="btn-secondary w-full" type="submit">
                     <ClipboardCheck className="h-4 w-4" aria-hidden="true" />
                     Mettre à jour
                   </button>

@@ -41,7 +41,7 @@ export default async function InvoicesPage({ searchParams }: { searchParams: Sea
       ) : null}
 
       <section className="surface mb-6 overflow-hidden">
-        <div className="relative h-48 bg-slate-200">
+        <div className="relative h-36 bg-slate-200 sm:h-48">
           <Image
             src="/images/admin/13-invoice-payment-ui-badr-auto-service.png"
             alt="Factures et paiements Badr Auto Service"
@@ -60,8 +60,8 @@ export default async function InvoicesPage({ searchParams }: { searchParams: Sea
               <EmptyState title="Aucune facture" text="Créez une facture depuis une réparation terminée ou en cours." />
             </div>
           ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full min-w-[840px] text-left text-sm">
+            <div className="overflow-x-auto sm:overflow-visible">
+              <table className="mobile-card-table min-w-[840px] sm:min-w-0">
                 <thead className="bg-slate-50 text-xs uppercase text-slate-500">
                   <tr>
                     <th className="px-5 py-3">Numéro</th>
@@ -76,15 +76,15 @@ export default async function InvoicesPage({ searchParams }: { searchParams: Sea
                 <tbody className="divide-y divide-slate-100">
                   {invoices.map((invoice) => (
                     <tr key={invoice.id}>
-                      <td className="px-5 py-4 font-bold text-navy">{invoice.invoiceNumber}</td>
-                      <td className="px-5 py-4">{invoice.customer.fullName}</td>
-                      <td className="px-5 py-4">{invoice.repair.trackingCode}</td>
-                      <td className="px-5 py-4 font-semibold">{formatMoney(invoice.totalAmount)}</td>
-                      <td className="px-5 py-4">
+                      <td data-label="Numéro" className="px-5 py-4 font-bold text-navy">{invoice.invoiceNumber}</td>
+                      <td data-label="Client" className="px-5 py-4">{invoice.customer.fullName}</td>
+                      <td data-label="Réparation" className="px-5 py-4">{invoice.repair.trackingCode}</td>
+                      <td data-label="Total" className="px-5 py-4 font-semibold">{formatMoney(invoice.totalAmount)}</td>
+                      <td data-label="Paiement" className="px-5 py-4">
                         <StatusBadge label={paymentStatusLabels[invoice.status]} status={invoice.status} />
                       </td>
-                      <td className="px-5 py-4">{formatDate(invoice.createdAt)}</td>
-                      <td className="px-5 py-4">
+                      <td data-label="Date" className="px-5 py-4">{formatDate(invoice.createdAt)}</td>
+                      <td data-label="Action" className="px-5 py-4">
                         <Link className="font-semibold text-accent" href={`/admin/factures/${invoice.id}`}>
                           Ouvrir
                         </Link>

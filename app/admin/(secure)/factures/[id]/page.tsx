@@ -73,8 +73,8 @@ export default async function InvoiceDetailPage({
               <StatusBadge label={paymentStatusLabels[invoice.status]} status={invoice.status} />
             </div>
           </div>
-          <div className="overflow-x-auto">
-            <table className="w-full min-w-[720px] text-left text-sm">
+          <div className="overflow-x-auto sm:overflow-visible">
+            <table className="mobile-card-table min-w-[720px] sm:min-w-0">
               <thead className="bg-slate-50 text-xs uppercase text-slate-500">
                 <tr>
                   <th className="px-5 py-3">Type</th>
@@ -87,11 +87,11 @@ export default async function InvoiceDetailPage({
               <tbody className="divide-y divide-slate-100">
                 {invoice.lines.map((line) => (
                   <tr key={line.id}>
-                    <td className="px-5 py-4">{invoiceLineTypeLabels[line.type]}</td>
-                    <td className="px-5 py-4 font-semibold text-slate-800">{line.description}</td>
-                    <td className="px-5 py-4">{line.quantity}</td>
-                    <td className="px-5 py-4">{formatMoney(line.unitPrice)}</td>
-                    <td className="px-5 py-4 font-bold text-navy">
+                    <td data-label="Type" className="px-5 py-4">{invoiceLineTypeLabels[line.type]}</td>
+                    <td data-label="Description" className="px-5 py-4 font-semibold text-slate-800">{line.description}</td>
+                    <td data-label="Quantité" className="px-5 py-4">{line.quantity}</td>
+                    <td data-label="Prix unitaire" className="px-5 py-4">{formatMoney(line.unitPrice)}</td>
+                    <td data-label="Total" className="px-5 py-4 font-bold text-navy">
                       {formatMoney(Number(line.unitPrice.toString()) * line.quantity)}
                     </td>
                   </tr>

@@ -140,8 +140,8 @@ export default async function CustomerDetailPage({
                 <EmptyState title="Aucune réparation" text="L’historique apparaîtra dès le premier dossier." />
               </div>
             ) : (
-              <div className="overflow-x-auto">
-                <table className="w-full min-w-[720px] text-left text-sm">
+              <div className="overflow-x-auto sm:overflow-visible">
+                <table className="mobile-card-table min-w-[720px] sm:min-w-0">
                   <thead className="bg-slate-50 text-xs uppercase text-slate-500">
                     <tr>
                       <th className="px-5 py-3">Code</th>
@@ -155,16 +155,16 @@ export default async function CustomerDetailPage({
                   <tbody className="divide-y divide-slate-100">
                     {customer.repairs.map((repair) => (
                       <tr key={repair.id}>
-                        <td className="px-5 py-4 font-bold text-navy">{repair.trackingCode}</td>
-                        <td className="px-5 py-4">
+                        <td data-label="Code" className="px-5 py-4 font-bold text-navy">{repair.trackingCode}</td>
+                        <td data-label="Véhicule" className="px-5 py-4">
                           {repair.vehicle ? `${repair.vehicle.brand} ${repair.vehicle.model}` : "Non renseigné"}
                         </td>
-                        <td className="px-5 py-4">
+                        <td data-label="Statut" className="px-5 py-4">
                           <StatusBadge label={repairStatusLabels[repair.status]} status={repair.status} />
                         </td>
-                        <td className="px-5 py-4">{formatMoney(repair.estimatedPrice)}</td>
-                        <td className="px-5 py-4">{formatDate(repair.createdAt)}</td>
-                        <td className="px-5 py-4">
+                        <td data-label="Prix estimé" className="px-5 py-4">{formatMoney(repair.estimatedPrice)}</td>
+                        <td data-label="Créé le" className="px-5 py-4">{formatDate(repair.createdAt)}</td>
+                        <td data-label="Action" className="px-5 py-4">
                           <Link className="font-semibold text-accent" href={`/admin/reparations/${repair.id}`}>
                             Ouvrir
                           </Link>

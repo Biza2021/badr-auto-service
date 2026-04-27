@@ -13,8 +13,8 @@ export default function ContactPage() {
   return (
     <PublicShell>
       <main className="bg-mist">
-        <section className="bg-white py-14">
-          <div className="container-page grid gap-10 lg:grid-cols-[1fr_0.95fr] lg:items-center">
+        <section className="bg-white py-12 sm:py-14">
+          <div className="container-page grid gap-8 lg:grid-cols-[1fr_0.95fr] lg:items-center">
             <div>
               <SectionHeading
                 eyebrow="Contact"
@@ -46,7 +46,7 @@ export default function ContactPage() {
                   </p>
                 </div>
               </div>
-              <Link className="btn-primary mt-7" href="/prendre-rendez-vous">
+              <Link className="btn-primary mt-7 w-full sm:w-auto" href="/prendre-rendez-vous">
                 <CalendarCheck className="h-4 w-4" aria-hidden="true" />
                 Prendre rendez-vous
               </Link>
@@ -54,7 +54,7 @@ export default function ContactPage() {
             <ImagePanel
               src="/images/customer/05-contact-location-badr-auto-service.png"
               alt="Localisation du garage Badr Auto Service"
-              className="min-h-[420px]"
+              className="min-h-[280px] sm:min-h-[420px]"
               priority
             />
           </div>
