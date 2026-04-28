@@ -13,6 +13,9 @@ import {
 import { ImagePanel } from "@/components/image-panel";
 import { PublicShell } from "@/components/public-header";
 import { SectionHeading } from "@/components/section-heading";
+import { getGarageSettings } from "@/lib/garage-settings";
+
+export const dynamic = "force-dynamic";
 
 const services = [
   "Vidange et filtres",
@@ -38,15 +41,17 @@ const workflow = [
   "Récupération avec explications"
 ];
 
-export default function HomePage() {
+export default async function HomePage() {
+  const settings = await getGarageSettings();
+
   return (
-    <PublicShell>
+    <PublicShell settings={settings}>
       <main>
         <section className="relative overflow-hidden bg-navy text-white">
           <div className="absolute inset-0">
             <Image
               src="/images/customer/01-homepage-hero-badr-auto-service.png"
-              alt="Atelier Badr Auto Service avec véhicules en réparation"
+              alt={`Atelier ${settings.garageName} avec véhicules en réparation`}
               fill
               priority
               sizes="100vw"
@@ -58,11 +63,9 @@ export default function HomePage() {
             <div className="max-w-3xl">
               <p className="mb-4 inline-flex items-center gap-2 rounded-full bg-white/12 px-3 py-1 text-xs font-semibold text-orange-100 ring-1 ring-white/20 sm:text-sm">
                 <ShieldCheck className="h-4 w-4" aria-hidden="true" />
-                Garage mécanique à Casablanca
+                {settings.address}
               </p>
-              <h1 className="text-4xl font-extrabold leading-tight sm:text-5xl lg:text-6xl">
-                Badr Auto Service
-              </h1>
+              <h1 className="text-4xl font-extrabold leading-tight sm:text-5xl lg:text-6xl">{settings.garageName}</h1>
               <p className="mt-4 max-w-2xl text-base leading-7 text-slate-100 sm:text-lg sm:leading-8">
                 Entretien, diagnostic et réparation automobile avec prise de rendez-vous en ligne,
                 suivi par code et échanges clairs avec le garage.
@@ -95,7 +98,7 @@ export default function HomePage() {
           <div className="container-page grid gap-8 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
             <ImagePanel
               src="/images/customer/02-services-overview-badr-auto-service.png"
-              alt="Services mécaniques proposés par Badr Auto Service"
+              alt={`Services mécaniques proposés par ${settings.garageName}`}
               className="min-h-[260px] sm:min-h-[320px]"
             />
             <div>
@@ -125,7 +128,7 @@ export default function HomePage() {
               <SectionHeading
                 eyebrow="Confiance"
                 title="Une relation claire entre le client et l’atelier"
-                text="Badr Auto Service privilégie les explications utiles, les accords avant intervention et un suivi organisé, sans promesses exagérées."
+                text={`${settings.garageName} privilégie les explications utiles, les accords avant intervention et un suivi organisé, sans promesses exagérées.`}
               />
               <div className="mt-7 grid gap-4 sm:grid-cols-2">
                 {reasons.map((reason) => (
@@ -138,7 +141,7 @@ export default function HomePage() {
             </div>
             <ImagePanel
               src="/images/customer/03-about-trust-badr-auto-service.png"
-              alt="Accueil professionnel au garage Badr Auto Service"
+              alt={`Accueil professionnel au garage ${settings.garageName}`}
               className="min-h-[280px] sm:min-h-[360px]"
             />
           </div>
@@ -231,7 +234,7 @@ export default function HomePage() {
           <div className="container-page grid gap-8 lg:grid-cols-[0.95fr_1.05fr] lg:items-center">
             <ImagePanel
               src="/images/customer/15-garage-workflow-operations-badr-auto-service.png"
-              alt="Organisation de l’atelier Badr Auto Service"
+              alt={`Organisation de l’atelier ${settings.garageName}`}
               className="min-h-[280px] sm:min-h-[380px]"
             />
             <div>
@@ -286,7 +289,7 @@ export default function HomePage() {
           <div className="container-page grid gap-8 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
             <ImagePanel
               src="/images/customer/05-contact-location-badr-auto-service.png"
-              alt="Contact et localisation de Badr Auto Service"
+              alt={`Contact et localisation de ${settings.garageName}`}
               className="min-h-[260px] sm:min-h-[330px]"
             />
             <div>
@@ -298,15 +301,19 @@ export default function HomePage() {
               <div className="mt-6 grid gap-3 text-sm font-semibold text-slate-800">
                 <p className="flex items-center gap-3">
                   <PhoneCall className="h-5 w-5 text-accent" aria-hidden="true" />
-                  +212 5 22 48 19 70
+                  {settings.phoneNumber}
                 </p>
                 <p className="flex items-center gap-3">
                   <MessageCircle className="h-5 w-5 text-accent" aria-hidden="true" />
-                  WhatsApp : +212 6 61 24 87 30
+                  WhatsApp : {settings.whatsappNumber}
                 </p>
                 <p className="flex items-center gap-3">
                   <Car className="h-5 w-5 text-accent" aria-hidden="true" />
-                  Lundi - samedi, 08:30 - 18:30
+                  {settings.openingHours}
+                </p>
+                <p className="flex items-center gap-3">
+                  <ShieldCheck className="h-5 w-5 text-accent" aria-hidden="true" />
+                  {settings.address}
                 </p>
               </div>
               <Link className="btn-dark mt-7 w-full sm:w-auto" href="/contact">

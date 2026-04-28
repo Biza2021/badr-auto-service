@@ -19,7 +19,7 @@ export function AdminPageHeader({
         {text ? <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-600">{text}</p> : null}
       </div>
       {action ? (
-        <div className="flex shrink-0 flex-col gap-2 sm:flex-row sm:flex-wrap [&>*]:w-full sm:[&>*]:w-auto">
+        <div className="print-hidden flex shrink-0 flex-col gap-2 sm:flex-row sm:flex-wrap [&>*]:w-full sm:[&>*]:w-auto">
           {action}
         </div>
       ) : null}

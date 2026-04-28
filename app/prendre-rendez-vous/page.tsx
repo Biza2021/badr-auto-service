@@ -4,11 +4,14 @@ import { ImagePanel } from "@/components/image-panel";
 import { PendingButton } from "@/components/pending-button";
 import { PublicShell } from "@/components/public-header";
 import { SectionHeading } from "@/components/section-heading";
+import { getGarageSettings } from "@/lib/garage-settings";
 import { createPublicAppointment } from "./actions";
 
 export const metadata: Metadata = {
   title: "Prendre rendez-vous"
 };
+
+export const dynamic = "force-dynamic";
 
 type SearchParams = Promise<Record<string, string | string[] | undefined>>;
 
@@ -25,12 +28,13 @@ const services = [
 ];
 
 export default async function AppointmentPage({ searchParams }: { searchParams: SearchParams }) {
+  const settings = await getGarageSettings();
   const params = await searchParams;
   const success = params.succes === "1";
   const error = typeof params.erreur === "string" ? params.erreur : null;
 
   return (
-    <PublicShell>
+    <PublicShell settings={settings}>
       <main className="bg-mist">
         <section className="bg-white py-12 sm:py-14">
           <div className="container-page grid gap-8 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
@@ -54,7 +58,7 @@ export default async function AppointmentPage({ searchParams }: { searchParams: 
             </div>
             <ImagePanel
               src="/images/customer/04-online-appointment-booking-badr-auto-service.png"
-              alt="Formulaire de rendez-vous Badr Auto Service"
+              alt={`Formulaire de rendez-vous ${settings.garageName}`}
               className="min-h-[260px] sm:min-h-[330px]"
               priority
             />

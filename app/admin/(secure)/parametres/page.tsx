@@ -3,7 +3,7 @@ import { AdminPageHeader } from "@/components/admin-page-header";
 import { PendingButton } from "@/components/pending-button";
 import { updateGarageSettingsAction } from "@/app/admin/actions";
 import { requireAdmin } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
+import { getGarageSettings } from "@/lib/garage-settings";
 
 type SearchParams = Promise<Record<string, string | string[] | undefined>>;
 
@@ -11,16 +11,7 @@ export default async function SettingsPage({ searchParams }: { searchParams: Sea
   await requireAdmin();
   const params = await searchParams;
   const success = params.succes;
-  const settings =
-    (await prisma.garageSettings.findUnique({ where: { singletonKey: "default" } })) ??
-    ({
-      garageName: "Badr Auto Service",
-      phoneNumber: "+212 5 22 48 19 70",
-      whatsappNumber: "+212 6 61 24 87 30",
-      address: "Angle rue Al Massira et rue Ibn Tachfine, Casablanca",
-      openingHours: "Lundi - samedi, 08:30 - 18:30",
-      defaultLanguage: "fr"
-    } as const);
+  const settings = await getGarageSettings();
 
   return (
     <>

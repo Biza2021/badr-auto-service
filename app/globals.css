@@ -122,3 +122,70 @@ select {
     width: 100%;
   }
 }
+
+@media print {
+  @page {
+    size: A4;
+    margin: 12mm;
+  }
+
+  body {
+    background: #fff !important;
+    color: #111827 !important;
+  }
+
+  header,
+  nav,
+  aside,
+  .print-hidden {
+    display: none !important;
+  }
+
+  main {
+    padding: 0 !important;
+  }
+
+  .surface,
+  .print-invoice {
+    border: 0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+  }
+
+  .print-invoice {
+    overflow: visible !important;
+  }
+
+  .print-invoice table {
+    min-width: 0 !important;
+    width: 100% !important;
+    border-collapse: collapse !important;
+  }
+
+  .print-invoice thead {
+    display: table-header-group !important;
+  }
+
+  .print-invoice tbody {
+    display: table-row-group !important;
+    padding: 0 !important;
+  }
+
+  .print-invoice tr {
+    display: table-row !important;
+    border: 0 !important;
+    padding: 0 !important;
+  }
+
+  .print-invoice th,
+  .print-invoice td {
+    display: table-cell !important;
+    padding: 8px !important;
+    border-bottom: 1px solid #e5e7eb !important;
+    text-align: left !important;
+  }
+
+  .print-invoice td::before {
+    display: none !important;
+  }
+}

@@ -81,7 +81,7 @@ async function main() {
     data: {
       phoneNumber: "+212 5 22 48 19 70",
       whatsappNumber: "+212 6 61 24 87 30",
-      address: "Angle rue Al Massira et rue Ibn Tachfine, Casablanca",
+      address: "Salé Jadida",
       openingHours: "Lundi - samedi, 08:30 - 18:30",
       defaultLanguage: "fr"
     }

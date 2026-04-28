@@ -3,10 +3,13 @@ import { Battery, CarFront, Fan, Gauge, SearchCheck, ShieldCheck, Snowflake, Wre
 import { ImagePanel } from "@/components/image-panel";
 import { PublicShell } from "@/components/public-header";
 import { SectionHeading } from "@/components/section-heading";
+import { getGarageSettings } from "@/lib/garage-settings";
 
 export const metadata: Metadata = {
   title: "Services"
 };
+
+export const dynamic = "force-dynamic";
 
 const services = [
   {
@@ -56,9 +59,11 @@ const services = [
   }
 ];
 
-export default function ServicesPage() {
+export default async function ServicesPage() {
+  const settings = await getGarageSettings();
+
   return (
-    <PublicShell>
+    <PublicShell settings={settings}>
       <main className="bg-mist">
         <section className="bg-white py-12 sm:py-14">
           <div className="container-page grid gap-8 lg:grid-cols-[0.95fr_1.05fr] lg:items-center">
@@ -66,12 +71,12 @@ export default function ServicesPage() {
               <SectionHeading
                 eyebrow="Services"
                 title="Entretien et réparation pour les besoins réels du quotidien"
-                text="Badr Auto Service privilégie une approche claire : comprendre le problème, expliquer les options et intervenir avec méthode."
+                text={`${settings.garageName} privilégie une approche claire : comprendre le problème, expliquer les options et intervenir avec méthode.`}
               />
             </div>
             <ImagePanel
               src="/images/customer/02-services-overview-badr-auto-service.png"
-              alt="Aperçu des services Badr Auto Service"
+              alt={`Aperçu des services ${settings.garageName}`}
               className="min-h-[260px] sm:min-h-[320px]"
               priority
             />

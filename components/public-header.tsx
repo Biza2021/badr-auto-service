@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { CalendarCheck, MapPin, Menu, PhoneCall, Wrench } from "lucide-react";
+import { getGarageSettings, type GarageSettingsView } from "@/lib/garage-settings";
 
 const navItems = [
   { href: "/services", label: "Services" },
@@ -8,17 +9,19 @@ const navItems = [
   { href: "/contact", label: "Contact" }
 ];
 
-export function PublicHeader() {
+export function PublicHeader({ settings }: { settings: GarageSettingsView }) {
   return (
     <header className="sticky top-0 z-40 border-b border-slate-200 bg-white/95 backdrop-blur">
       <div className="container-page flex min-h-16 items-center justify-between gap-3 py-3">
-        <Link href="/" className="flex items-center gap-3" aria-label="Accueil Badr Auto Service">
+        <Link href="/" className="flex items-center gap-3" aria-label={`Accueil ${settings.garageName}`}>
           <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-navy text-white">
             <Wrench className="h-5 w-5" aria-hidden="true" />
           </span>
           <span>
-            <span className="block text-base font-bold text-navy">Badr Auto Service</span>
-            <span className="block text-xs font-medium text-slate-500">Garage mécanique à Casablanca</span>
+            <span className="block text-base font-bold text-navy">{settings.garageName}</span>
+            <span className="block max-w-48 truncate text-xs font-medium text-slate-500 sm:max-w-none">
+              {settings.address}
+            </span>
           </span>
         </Link>
         <nav className="hidden flex-wrap items-center gap-2 text-sm font-semibold text-slate-700 md:flex">
@@ -57,7 +60,7 @@ export function PublicHeader() {
   );
 }
 
-export function PublicFooter() {
+export function PublicFooter({ settings }: { settings: GarageSettingsView }) {
   return (
     <footer className="bg-navy text-white">
       <div className="container-page grid gap-8 py-10 md:grid-cols-[1.2fr_1fr_1fr]">
@@ -66,7 +69,7 @@ export function PublicFooter() {
             <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-accent text-white">
               <Wrench className="h-5 w-5" aria-hidden="true" />
             </span>
-            <span className="text-lg font-bold">Badr Auto Service</span>
+            <span className="text-lg font-bold">{settings.garageName}</span>
           </div>
           <p className="mt-4 max-w-md text-sm leading-6 text-slate-300">
             Entretien, diagnostic et réparation automobile avec un suivi clair et des conseils honnêtes.
@@ -77,11 +80,11 @@ export function PublicFooter() {
           <div className="mt-4 space-y-3 text-sm text-slate-300">
             <p className="flex items-center gap-2">
               <PhoneCall className="h-4 w-4 text-accent" aria-hidden="true" />
-              +212 5 22 48 19 70
+              {settings.phoneNumber}
             </p>
             <p className="flex items-start gap-2">
               <MapPin className="mt-0.5 h-4 w-4 text-accent" aria-hidden="true" />
-              Casablanca, Maroc
+              {settings.address}
             </p>
           </div>
         </div>
@@ -100,18 +103,26 @@ export function PublicFooter() {
         </div>
       </div>
       <div className="border-t border-white/10 py-4 text-center text-xs text-slate-400">
-        © {new Date().getFullYear()} Badr Auto Service. Tous droits réservés.
+        © {new Date().getFullYear()} {settings.garageName}. Tous droits réservés.
       </div>
     </footer>
   );
 }
 
-export function PublicShell({ children }: { children: React.ReactNode }) {
+export async function PublicShell({
+  children,
+  settings
+}: {
+  children: React.ReactNode;
+  settings?: GarageSettingsView;
+}) {
+  const garageSettings = settings ?? (await getGarageSettings());
+
   return (
     <>
-      <PublicHeader />
+      <PublicHeader settings={garageSettings} />
       {children}
-      <PublicFooter />
+      <PublicFooter settings={garageSettings} />
     </>
   );
 }

@@ -590,5 +590,10 @@ export async function updateGarageSettingsAction(formData: FormData) {
   });
   await writeActivity("Paramètres du garage mis à jour", "GarageSettings");
   revalidatePath("/admin/parametres");
+  revalidatePath("/");
+  revalidatePath("/contact");
+  revalidatePath("/services");
+  revalidatePath("/prendre-rendez-vous");
+  revalidatePath("/suivi");
   redirect("/admin/parametres?succes=1");
 }
